@@ -12,6 +12,7 @@ import Page9 from "./pages/Page9/Page9";
 import Page10 from "./pages/Page10/Page10";
 import ScrollingPage from "./pages/ScrollingPage/ScrollingPage";
 import Header from "./components/Header/Header";
+import { gsap } from "gsap";
 
 function App() {
   const [pageNumber, setPageNumber] = useState(1);
@@ -21,6 +22,8 @@ function App() {
   const totalPages = 10;
 
   const scrollTimeout = useRef(null);
+  const indicatorRefs = useRef([]);
+  const indicatorContainerRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = (e) => {
@@ -74,9 +77,9 @@ function App() {
       case 1:
         return <Page1 />;
       case 2:
-        return <Page2 />;
+        return <Page2 pageNumber={pageNumber} />;
       case 3:
-        return <Page3 />;
+        return <Page3 pageNumber={pageNumber}/>;
       case 4:
         return <Page4 />;
       case 5:
@@ -108,6 +111,16 @@ function App() {
     };
   }, [pageNumber]);
 
+  useEffect(() => {
+    if (pageNumber !== 1 && indicatorContainerRef.current) {
+      gsap.fromTo(
+        indicatorContainerRef.current,
+        { opacity: 0, scale: 0.8 },
+        { opacity: 1, scale: 1, duration: 1, ease: "power2.out" }
+      );
+    }
+  }, [pageNumber]);
+
   return (
     <div className="app-container" ref={appRef}>
       <Header pageNumber={pageNumber} />
@@ -119,10 +132,13 @@ function App() {
           currentPageContent={renderScrollingPageContent()}
         />
       </div>
-
       {/* Page indicators */}
       {pageNumber == 1 ? null : (
-        <div className="page-indicator">
+        <div
+          className="page-indicator"
+          ref={indicatorContainerRef}
+          style={{ opacity: 0 }}
+        >
           {[...Array(totalPages)].map((_, index) => {
             const indicatorPageNumber = index + 1;
             return (
@@ -131,6 +147,7 @@ function App() {
                 className={`indicator ${
                   pageNumber === indicatorPageNumber ? "active" : ""
                 }`}
+                ref={el => (indicatorRefs.current[index] = el)}
                 onClick={() => {
                   if (isTransitioning || pageNumber === indicatorPageNumber)
                     return;
