@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import vdo8 from "/src/assets/vdo8.webm";
+import vdo8_1 from "/src/assets/vdo8.1.webm";
+import vdo8_2 from "/src/assets/vdo8.2.webm";
 
 const Page8 = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -11,19 +14,19 @@ const Page8 = () => {
       title: "Full Electric Mode",
       description:
         "Experience silent cruising and zero emissions. Ideal for short trips and enjoying the tranquility of the sea.",
-      videoSrc: "/src/assets/vdo8.webm",
+      videoSrc: vdo8,
     },
     {
       title: "Diesel Electric Mode",
       description:
         "Optimized for longer journeys, balancing efficiency and power. Reduces fuel consumption compared to traditional diesel engines.",
-      videoSrc: "/src/assets/vdo8.1.webm",
+      videoSrc: vdo8_1,
     },
     {
       title: "Hibernation Mode",
       description:
         "Minimizes energy consumption when docked, turning the yacht into a power source. Sell excess energy back to the grid or power a villa.",
-      videoSrc: "/src/assets/vdo8.2.webm",
+      videoSrc: vdo8_2,
     },
   ];
 

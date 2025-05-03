@@ -16,6 +16,23 @@ import PageIndicator from "./components/PageIndicator";
 import SideBar from "./components/SideBar";
 import Loader from "./components/Loader";
 
+import vdo1 from '/src/assets/vdo1.webm';
+import vdo2 from '/src/assets/vdo2.webm';
+import vdo3 from '/src/assets/vdo3.webm';
+import vdo4 from '/src/assets/vdo4.webm';
+import vdo5 from '/src/assets/vdo5.webm';
+import vdo6 from '/src/assets/vdo6.webm';
+import vdo1rev from '/src/assets/vdo1rev.webm';
+import vdo2rev from '/src/assets/vdo2rev.webm';
+import vdo3rev from '/src/assets/vdo3rev.webm';
+import vdo4rev from '/src/assets/vdo4rev.webm';
+import vdo5rev from '/src/assets/vdo5rev.webm';
+import vdo6rev from '/src/assets/vdo6rev.webm';
+import vdo8 from '/src/assets/vdo8.webm';
+import vdo9 from '/src/assets/vdo9.webm';
+
+
+
 const getSidebarContent = (pageNumber) => {
   switch (pageNumber) {
     case 2:
@@ -58,15 +75,24 @@ const getPageComponent = (pageNumber, sidebarProps) => {
   }
 };
 
-const getVideoSource = (dir, page) => {
-  const rev = (n) => `/src/assets/vdo${n}rev.webm`;
-  const fwd = (n) => `/src/assets/vdo${n}.webm`;
-  if (page >= 1 && page <= 6) return dir === "up" ? rev(page) : fwd(page);
-  if (page === 8 || page === 9) return fwd(page);
-  return null;
+const videoMap = {
+  fwd: { 1: vdo1, 2: vdo2, 3: vdo3, 4: vdo4, 5: vdo5, 6: vdo6, 8: vdo8, 9: vdo9 },
+  rev: { 1: vdo1rev, 2: vdo2rev, 3: vdo3rev, 4: vdo4rev, 5: vdo5rev, 6: vdo6rev },
 };
 
+const getVideoSource = (dir, page) => {
+  if (dir === 'up' && videoMap.rev[page]) {
+    return videoMap.rev[page];
+  }
+  if (videoMap.fwd[page]) {
+    return videoMap.fwd[page];
+  }
+  return null; 
+};
+
+
 function App() {
+  // ... existing state ...
   const [isLoading, setIsLoading] = useState(true);
   const [pageNumber, setPageNumber] = useState(1);
   const [scrollDirection, setScrollDirection] = useState("down");
@@ -82,6 +108,7 @@ function App() {
 
   const sidebarProps = { isSidebarOpen, openSidebar, closeSidebar };
 
+  // Initialize videoSrc using the updated function
   const [contentState, setContentState] = useState({
     current: getPageComponent(1, sidebarProps),
     previous: null,
@@ -135,7 +162,7 @@ function App() {
       window.removeEventListener("wheel", handleScroll);
       if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
     };
-  }, [pageNumber, isTransitioning, isSidebarOpen, totalPages]); 
+  }, [pageNumber, isTransitioning, isSidebarOpen, totalPages]);
 
   useEffect(() => {
     if (isTransitioning) {
@@ -178,7 +205,7 @@ function App() {
   useEffect(() => {
     if (isTransitioning) {
       const newSrc = getVideoSource(scrollDirection, pageNumber);
-      setVideoSrc(newSrc);
+      setVideoSrc(newSrc); 
     }
   }, [isTransitioning, pageNumber, scrollDirection]);
 
@@ -188,7 +215,7 @@ function App() {
     const bodyEl = document.body;
 
     htmlEl.style.overflow = isScrollablePage ? "auto" : "hidden";
-    bodyEl.style.overflow = isScrollablePage ? "auto" : "hidden"; 
+    bodyEl.style.overflow = isScrollablePage ? "auto" : "hidden";
 
     if (isScrollablePage) {
       htmlEl.classList.add("scrollbar-hide");
@@ -233,7 +260,7 @@ function App() {
         }`}
       >
         <VideoBackground
-          videoSrc={videoSrc}
+          videoSrc={videoSrc} 
           isSidebarOpen={isSidebarOpen}
           pageNumber={pageNumber}
         />
