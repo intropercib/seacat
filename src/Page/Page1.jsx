@@ -11,9 +11,8 @@ const Page1 = () => {
   const shaderRef = useRef(null);
   const scrollOptionRef = useRef(null);
   const pageContentRef = useRef(null);
-  const titleContainerRef = useRef(null); // NEW ref for title+bubbles section
+  const titleContainerRef = useRef(null); 
 
-  // Bounce animation for the scroll dot
   useEffect(() => {
     if (!circularRef.current) return;
     gsap.set(circularRef.current, { y: -10 });
@@ -27,7 +26,6 @@ const Page1 = () => {
     return () => tween.kill();
   }, []);
 
-  // Animate bubbles continuously
   useEffect(() => {
     if (!shaderRef.current) return;
 
@@ -78,7 +76,6 @@ const Page1 = () => {
     };
   }, []);
 
-  // Scroll-triggered fade out of scroll prompt
   useEffect(() => {
     if (!scrollOptionRef.current || !pageContentRef.current) return;
 
@@ -107,7 +104,6 @@ const Page1 = () => {
     };
   }, []);
 
-  // NEW: Fade in + slide up title+bubbles section
   useEffect(() => {
     if (!titleContainerRef.current) return;
 
@@ -129,7 +125,6 @@ const Page1 = () => {
       className="relative flex h-full w-full flex-col items-center justify-center text-center text-white"
       ref={pageContentRef}
     >
-      {/* Title + Bubbles */}
       <div className="relative" ref={titleContainerRef}>
         <img
           src={title}

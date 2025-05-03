@@ -25,7 +25,6 @@ const MenuText = ({
   const tl = useRef(null);
 
   useEffect(() => {
-    const elContainer = containerRef.current; 
     const elH3 = h3Ref.current;
     const elH1 = h1Ref.current;
     const charsH3 = gsap.utils.toArray(elH3.querySelectorAll(".char"));

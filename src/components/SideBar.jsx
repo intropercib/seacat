@@ -19,7 +19,7 @@ const SideBar = ({ isOpen, onClose, children }) => {
   return (
     <div
       ref={sidebarRef}
-      className={`sidebar-scroll-container h-screen w-[300px] bg-[#000000] text-white overflow-y-auto fixed top-0 right-0 p-4 transform z-[60] ${isOpen ? 'translate-x-0' : 'translate-x-full invisible'}`}
+      className={`sidebar-scroll-container h-screen w-[300px] bg-[#000000] text-white overflow-y-auto fixed top-0 right-0 p-4 transform z-50 scrollbar-hide ${isOpen ? 'translate-x-0' : 'translate-x-full invisible'}`}
       style={{ willChange: 'transform', transform: 'translateX(100%)' }}
     >
       <div className="flex justify-end mb-4">

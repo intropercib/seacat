@@ -1,48 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import SideBar from "../components/SideBar";
+import React from "react";
 import CenterMenu from "../components/CenterMenu";
 
 const PageSkeleton = ({
-  isSidebarOpen,
   openSidebar,
-  closeSidebar,
-  sidebarContent,
+  isSidebarOpen,
   squareRotation,
   menuTextContainerClassName,
-  menuTitle, 
-  menuSubtitle 
+  menuTitle,
+  menuSubtitle
 }) => {
-  const [applyHiddenStyles, setApplyHiddenStyles] = useState(false);
-  const hideTimeoutRef = useRef(null);
-
-  useEffect(() => {
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current);
-      hideTimeoutRef.current = null;
-    }
-
-    if (isSidebarOpen) {
-      hideTimeoutRef.current = setTimeout(() => {
-        setApplyHiddenStyles(true);
-        hideTimeoutRef.current = null;
-      }, 800); 
-    } else {
-      setApplyHiddenStyles(false);
-    }
-
-    return () => {
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current);
-      }
-    };
-  }, [isSidebarOpen]);
-
   return (
     <div className="relative min-h-screen flex items-center justify-center">
       <div
-        className={`flex-shrink-0 ${isSidebarOpen ? "z-0" : "z-10"} ${
-          applyHiddenStyles ? "opacity-0 pointer-events-none" : "opacity-100"
-        }`}
+        className={`flex-shrink-0 z-10`}
       >
         <CenterMenu
           onOpenSidebar={openSidebar}
@@ -53,9 +23,6 @@ const PageSkeleton = ({
           menuSubtitle={menuSubtitle}
         />
       </div>
-      <SideBar isOpen={isSidebarOpen} onClose={closeSidebar}>
-        {sidebarContent}
-      </SideBar>
     </div>
   );
 };

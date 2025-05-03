@@ -1,7 +1,7 @@
 import React from "react";
 import PageSkeleton from "./PageSkeleton";
 
-const Page5SidebarContent = () => (
+export const Page5SidebarContent = () => (
   <>
     <h1 className="text-lg font-semibold mb-4">Page 5: Deck Spaces</h1>
     <p className="text-sm text-gray-300 mb-4">
@@ -20,10 +20,9 @@ const Page5 = ({ isSidebarOpen, openSidebar, closeSidebar }) => {
         isSidebarOpen={isSidebarOpen}
         openSidebar={openSidebar}
         closeSidebar={closeSidebar}
-        sidebarContent={<Page5SidebarContent />}
         squareRotation={270}
         menuTextContainerClassName="-top-14 right-[70px] text-right"
-        menuTitle="The Double Hull" 
+        menuTitle="The Double Hull"
         menuSubtitle="Movement and Stability"
       />
     </div>

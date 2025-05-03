@@ -5,15 +5,14 @@ import SquareMenu from "./SquareMenu";
 
 const CenterMenu = ({
   onOpenSidebar,
-  isSidebarOpen,
+  isSidebarOpen, 
   squareRotation,
   menuTextContainerClassName,
   menuTitle,
   menuSubtitle
 }) => {
   const containerRef = useRef(null);
-  const isVisible = !isSidebarOpen;
-
+  const isVisible = !isSidebarOpen; 
   useEffect(() => {
     const container = containerRef.current;
     const plusIcon = container?.querySelector(".magnetic-target-plus");
@@ -66,20 +65,33 @@ const CenterMenu = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (containerRef.current) {
+      gsap.to(containerRef.current, {
+        opacity: isVisible ? 1 : 0,
+        pointerEvents: isVisible ? 'auto' : 'none',
+        duration: 0.8, 
+        ease: "power2.inOut"
+      });
+    }
+  }, [isVisible]);
+
+
   return (
     <div
       ref={containerRef}
       className="relative cursor-pointer"
-      onClick={onOpenSidebar}
+      onClick={isVisible ? onOpenSidebar : undefined} 
+      style={{ willChange: 'opacity' }} 
     >
       <div className={`absolute text-nowrap pointer-events-none ${menuTextContainerClassName || '-top-12 left-[80px]'}`}>
         <MenuText
-          isVisible={isVisible}
+          isVisible={isVisible} 
           title={menuTitle}
           subtitle={menuSubtitle}
         />
       </div>
-      <SquareMenu isVisible={isVisible} rotation={squareRotation} />
+      <SquareMenu isVisible={isVisible} rotation={squareRotation} /> 
     </div>
   );
 };

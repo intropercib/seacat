@@ -38,7 +38,6 @@ const Header = ({ pageNumber }) => {
 
 
     if (!header1Element || header2Elements.length < 3) {
-      console.warn("Header elements not ready for animation.");
       return;
     }
 
@@ -73,7 +72,6 @@ const Header = ({ pageNumber }) => {
     } else if (!isInitialLoad && pageNumber !== prevPageNumber) {
       const isTransitioning1to2 = pageNumber === 2 && prevPageNumber === 1;
       const isTransitioning2to1 = pageNumber === 1 && prevPageNumber === 2;
-      const isSnapTransition = !(isTransitioning1to2 || isTransitioning2to1);
 
       let header1Duration = DURATION_FADE;
       let header2Duration = DURATION_FADE;
@@ -128,7 +126,7 @@ const Header = ({ pageNumber }) => {
   }
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} className="absolute top-0 left-0 w-full z-20">
       <div
         className="absolute top-0 left-0 h-[100px] w-full flex justify-center items-center pt-[50px]"
         ref={header1Ref}
