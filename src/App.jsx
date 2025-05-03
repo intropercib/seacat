@@ -31,8 +31,6 @@ import vdo6rev from '/src/assets/vdo6rev.webm';
 import vdo8 from '/src/assets/vdo8.webm';
 import vdo9 from '/src/assets/vdo9.webm';
 
-
-
 const getSidebarContent = (pageNumber) => {
   switch (pageNumber) {
     case 2:
@@ -90,9 +88,7 @@ const getVideoSource = (dir, page) => {
   return null; 
 };
 
-
 function App() {
-  // ... existing state ...
   const [isLoading, setIsLoading] = useState(true);
   const [pageNumber, setPageNumber] = useState(1);
   const [scrollDirection, setScrollDirection] = useState("down");
@@ -108,7 +104,6 @@ function App() {
 
   const sidebarProps = { isSidebarOpen, openSidebar, closeSidebar };
 
-  // Initialize videoSrc using the updated function
   const [contentState, setContentState] = useState({
     current: getPageComponent(1, sidebarProps),
     previous: null,
@@ -117,6 +112,7 @@ function App() {
 
   const totalPages = 10;
   const scrollTimeout = useRef(null);
+  const scrollSensitivityThreshold = 5; 
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
@@ -124,10 +120,6 @@ function App() {
 
   useEffect(() => {
     const handleScroll = (e) => {
-      if (pageNumber === 10) {
-        return;
-      }
-
       if (isSidebarOpen) {
         const sidebarScrollContainer = document.querySelector('.sidebar-scroll-container');
         if (sidebarScrollContainer && sidebarScrollContainer.contains(e.target)) {
@@ -138,29 +130,56 @@ function App() {
         }
       }
 
-      e.preventDefault();
+      if (isTransitioning || scrollTimeout.current) {
+        e.preventDefault();
+        return;
+      }
 
-      if (isTransitioning) return;
-      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+      const isScrollingUp = e.deltaY < 0;
+      const isScrollingDown = e.deltaY > 0;
+      let shouldPreventDefault = false;
+
+      if (pageNumber === 10) {
+        const isNearTop = (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop) < scrollSensitivityThreshold;
+
+        if (isScrollingUp && isNearTop) {
+          shouldPreventDefault = true;
+        } else {
+          return;
+        }
+      } else {
+        shouldPreventDefault = true;
+      }
+
+      if (shouldPreventDefault) {
+        e.preventDefault();
+      } else {
+        return;
+      }
 
       scrollTimeout.current = setTimeout(() => {
-        if (e.deltaY > 0 && pageNumber < totalPages) {
+        scrollTimeout.current = null;
+
+        if (isScrollingDown && pageNumber < totalPages) {
           setIsTransitioning(true);
           setScrollDirection("down");
           setPageNumber((prev) => prev + 1);
-        } else if (e.deltaY < 0 && pageNumber > 1) {
+        } else if (isScrollingUp && pageNumber > 1) {
           setIsTransitioning(true);
           setScrollDirection("up");
           setPageNumber((prev) => prev - 1);
         }
-      }, 50);
+      }, 1250);
     };
 
     window.addEventListener("wheel", handleScroll, { passive: false });
 
     return () => {
       window.removeEventListener("wheel", handleScroll);
-      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+        scrollTimeout.current = null;
+      }
     };
   }, [pageNumber, isTransitioning, isSidebarOpen, totalPages]);
 
@@ -203,9 +222,10 @@ function App() {
   }, [pageNumber, isSidebarOpen]);
 
   useEffect(() => {
-    if (isTransitioning) {
+    if (isTransitioning && pageNumber !== 10) {
       const newSrc = getVideoSource(scrollDirection, pageNumber);
-      setVideoSrc(newSrc); 
+      setVideoSrc(newSrc);
+    } else if (pageNumber === 10 && scrollDirection === 'down') {
     }
   }, [isTransitioning, pageNumber, scrollDirection]);
 

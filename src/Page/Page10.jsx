@@ -35,7 +35,7 @@ const Page10 = () => {
   return (
     <>
       <div
-        className="w-full flex flex-col items-center pt-[100px] pb-[100px] min-h-screen"
+        className="w-full flex flex-col items-center pt-[100px] pb-[100px] min-h-screen bg-black"
         ref={containerRef}
       >
         <div className="text-6xl uppercase flex flex-col justify-center items-center mb-10">
