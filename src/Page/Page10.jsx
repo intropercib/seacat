@@ -56,7 +56,7 @@ const Page10 = () => {
                   className="h-full w-full object-cover"
                 />
               </div>
-              <div className="h-[500px] w-[700px] object-cover z-10 bg-gray-700 flex items-center justify-center z-20 anim-img">
+              <div className="h-[500px] w-[700px] object-cover bg-gray-700 flex items-center justify-center z-20 anim-img">
                 <img
                   src={imgL02}
                   alt="img"
@@ -94,7 +94,7 @@ const Page10 = () => {
                   className="h-full w-full object-cover"
                 />
               </div>
-              <div className="h-[500px] w-[700px] object-cover z-10 bg-gray-700 flex items-center justify-center z-20 anim-img">
+              <div className="h-[500px] w-[700px] object-cover bg-gray-700 flex items-center justify-center z-20 anim-img">
                 <img
                   src={imgL02}
                   alt="img"
