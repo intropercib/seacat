@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import Draggable from "gsap/Draggable";
+import vdo7 from "/src/assets/vdo7.webm";
 
 gsap.registerPlugin(Draggable);
 
@@ -19,7 +20,7 @@ const reappearedSnappedVideoStyles = {
 };
 
 const Page7 = () => {
-  const videoSource = "/src/assets/vdo7.webm";
+  const videoSource = vdo7;
   const [videoStyles, setVideoStyles] = useState(initialPage7VideoStyles);
 
   const svg1Ref = useRef(null);

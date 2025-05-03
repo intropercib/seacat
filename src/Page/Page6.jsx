@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import ConcentricCircle from "../components/ConcentricCircle";
 import { gsap } from "gsap";
+import vdo6 from "/src/assets/vdo6.webm";
+import vdo6_1 from "/src/assets/vdo6.1.webm";
+import vdo6_2 from "/src/assets/vdo6.2.webm";
 
 const Page6 = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -12,21 +15,21 @@ const Page6 = () => {
       title: "One day Trip",
       description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate veniam recusandae provident eligendi reiciendis doloribus molestias impedit nesciunt magni sequi.",
-      videoSrc: "/src/assets/vdo6.webm",
-      progress: 35, 
+      videoSrc: vdo6,
+      progress: 35,
     },
     {
       title: "Weekend Getaway",
       description:
         "Explore beautiful destinations just a few hours away. Perfect for those seeking a short break from the daily routine with unforgettable experiences.",
-      videoSrc: "/src/assets/vdo6.1.webm",
+      videoSrc: vdo6_1,
       progress: 65,
     },
     {
       title: "Adventure Tour",
       description:
         "Embark on thrilling adventures designed for adrenaline seekers. From rock climbing to white water rafting, these experiences will push your limits.",
-      videoSrc: "/src/assets/vdo6.2.webm",
+      videoSrc: vdo6_2,
       progress: 90,
     },
   ];
@@ -65,7 +68,7 @@ const Page6 = () => {
           ease: "power2.out",
         },
         "-=0.4"
-      ); 
+      );
     }
   }, [activeTab]);
 
@@ -77,7 +80,7 @@ const Page6 = () => {
     <div className="flex items-center justify-center h-full w-full relative overflow-hidden">
       <div className="h-[670px] w-[400px] rotate-45 bg-black absolute -top-[250px] -left-[120px] z-0"></div>
       <div className="h-[670px] w-[400px] rotate-45 bg-black absolute -bottom-[250px] -right-[120px] z-0"></div>
-      
+
       <div className="z-[5] flex flex-row items-center justify-center gap-4">
         <div className="w-[400px] absolute top-1/2 left-20">
           <div className="flex flex-row gap-2">
