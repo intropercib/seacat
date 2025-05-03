@@ -14,6 +14,7 @@ import VideoBackground from "./components/VideoBackground";
 import PageContent from "./components/PageContent";
 import PageIndicator from "./components/PageIndicator";
 import SideBar from "./components/SideBar";
+import Loader from "./components/Loader";
 
 const getSidebarContent = (pageNumber) => {
   switch (pageNumber) {
@@ -66,6 +67,7 @@ const getVideoSource = (dir, page) => {
 };
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [pageNumber, setPageNumber] = useState(1);
   const [scrollDirection, setScrollDirection] = useState("down");
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -86,18 +88,30 @@ function App() {
   });
   const [videoSrc, setVideoSrc] = useState(() => getVideoSource("down", 1));
 
-  const appRef = useRef(null);
   const totalPages = 10;
   const scrollTimeout = useRef(null);
 
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+  };
+
   useEffect(() => {
     const handleScroll = (e) => {
-      if (isSidebarOpen) {
-        if (!e.target.closest(".sidebar-scroll-container")) {
-          return;
-        }
+      if (pageNumber === 10) {
         return;
       }
+
+      if (isSidebarOpen) {
+        const sidebarScrollContainer = document.querySelector('.sidebar-scroll-container');
+        if (sidebarScrollContainer && sidebarScrollContainer.contains(e.target)) {
+          return;
+        } else {
+          e.preventDefault();
+          return;
+        }
+      }
+
+      e.preventDefault();
 
       if (isTransitioning) return;
       if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
@@ -115,13 +129,13 @@ function App() {
       }, 50);
     };
 
-    const appElement = appRef.current;
-    appElement?.addEventListener("wheel", handleScroll, { passive: false });
+    window.addEventListener("wheel", handleScroll, { passive: false });
+
     return () => {
-      appElement?.removeEventListener("wheel", handleScroll);
+      window.removeEventListener("wheel", handleScroll);
       if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
     };
-  }, [pageNumber, isTransitioning, isSidebarOpen, totalPages]);
+  }, [pageNumber, isTransitioning, isSidebarOpen, totalPages]); 
 
   useEffect(() => {
     if (isTransitioning) {
@@ -169,11 +183,33 @@ function App() {
   }, [isTransitioning, pageNumber, scrollDirection]);
 
   useEffect(() => {
+    const isScrollablePage = pageNumber === 10;
+    const htmlEl = document.documentElement;
+    const bodyEl = document.body;
+
+    htmlEl.style.overflow = isScrollablePage ? "auto" : "hidden";
+    bodyEl.style.overflow = isScrollablePage ? "auto" : "hidden"; 
+
+    if (isScrollablePage) {
+      htmlEl.classList.add("scrollbar-hide");
+      bodyEl.classList.add("scrollbar-hide");
+    } else {
+      htmlEl.classList.remove("scrollbar-hide");
+      bodyEl.classList.remove("scrollbar-hide");
+    }
+
     const rootElement = document.getElementById("root");
     if (rootElement) {
-      rootElement.style.overflow = pageNumber === 10 ? "auto" : "hidden";
+      rootElement.style.overflow = isScrollablePage ? "visible" : "hidden";
     }
+
+    return () => {
+        htmlEl.classList.remove("scrollbar-hide");
+        bodyEl.classList.remove("scrollbar-hide");
+    }
+
   }, [pageNumber]);
+
 
   const handlePageChange = (newPage, direction) => {
     if (isTransitioning || isSidebarOpen) return;
@@ -182,15 +218,19 @@ function App() {
     setPageNumber(newPage);
   };
 
+
+  if (isLoading) {
+    return <Loader onLoadingComplete={handleLoadingComplete} />;
+  }
+
   return (
     <>
       <div
         className={`app-container relative w-full text-white opacity-100 ${
           pageNumber === 10
-            ? "h-auto overflow-y-auto scrollbar-hide"
+            ? "h-auto"
             : "h-screen overflow-hidden"
         }`}
-        ref={appRef}
       >
         <VideoBackground
           videoSrc={videoSrc}

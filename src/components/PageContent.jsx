@@ -52,7 +52,7 @@ const PageContent = ({ currentContent, previousContent, isTransitioning }) => {
   }, [isTransitioning, currentContent, previousContent]);
 
   return (
-    <div className="pages-container relative h-screen w-full opacity-100 z-10 pointer-events-none">
+    <div className="pages-container pointer-events-none relative h-screen w-full opacity-100 z-10">
       {previousContent && (
         <div
           ref={previousContentRef}
