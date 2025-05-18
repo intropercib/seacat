@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Page1 from "./Page/Page1";
 import Page2, { Page2SidebarContent } from "./Page/Page2";
 import Page3, { Page3SidebarContent } from "./Page/Page3";
@@ -16,20 +16,20 @@ import PageIndicator from "./components/PageIndicator";
 import SideBar from "./components/SideBar";
 import Loader from "./components/Loader";
 
-import vdo1 from '/src/assets/vdo1.webm';
-import vdo2 from '/src/assets/vdo2.webm';
-import vdo3 from '/src/assets/vdo3.webm';
-import vdo4 from '/src/assets/vdo4.webm';
-import vdo5 from '/src/assets/vdo5.webm';
-import vdo6 from '/src/assets/vdo6.webm';
-import vdo1rev from '/src/assets/vdo1rev.webm';
-import vdo2rev from '/src/assets/vdo2rev.webm';
-import vdo3rev from '/src/assets/vdo3rev.webm';
-import vdo4rev from '/src/assets/vdo4rev.webm';
-import vdo5rev from '/src/assets/vdo5rev.webm';
-import vdo6rev from '/src/assets/vdo6rev.webm';
-import vdo8 from '/src/assets/vdo8.webm';
-import vdo9 from '/src/assets/vdo9.webm';
+import vdo1 from "/src/assets/vdo1.webm";
+import vdo2 from "/src/assets/vdo2.webm";
+import vdo3 from "/src/assets/vdo3.webm";
+import vdo4 from "/src/assets/vdo4.webm";
+import vdo5 from "/src/assets/vdo5.webm";
+import vdo6 from "/src/assets/vdo6.webm";
+import vdo1rev from "/src/assets/vdo1rev.webm";
+import vdo2rev from "/src/assets/vdo2rev.webm";
+import vdo3rev from "/src/assets/vdo3rev.webm";
+import vdo4rev from "/src/assets/vdo4rev.webm";
+import vdo5rev from "/src/assets/vdo5rev.webm";
+import vdo6rev from "/src/assets/vdo6rev.webm";
+import vdo8 from "/src/assets/vdo8.webm";
+import vdo9 from "/src/assets/vdo9.webm";
 
 const getSidebarContent = (pageNumber) => {
   switch (pageNumber) {
@@ -74,18 +74,34 @@ const getPageComponent = (pageNumber, sidebarProps) => {
 };
 
 const videoMap = {
-  fwd: { 1: vdo1, 2: vdo2, 3: vdo3, 4: vdo4, 5: vdo5, 6: vdo6, 8: vdo8, 9: vdo9 },
-  rev: { 1: vdo1rev, 2: vdo2rev, 3: vdo3rev, 4: vdo4rev, 5: vdo5rev, 6: vdo6rev },
+  fwd: {
+    1: vdo1,
+    2: vdo2,
+    3: vdo3,
+    4: vdo4,
+    5: vdo5,
+    6: vdo6,
+    8: vdo8,
+    9: vdo9,
+  },
+  rev: {
+    1: vdo1rev,
+    2: vdo2rev,
+    3: vdo3rev,
+    4: vdo4rev,
+    5: vdo5rev,
+    6: vdo6rev,
+  },
 };
 
 const getVideoSource = (dir, page) => {
-  if (dir === 'up' && videoMap.rev[page]) {
+  if (dir === "up" && videoMap.rev[page]) {
     return videoMap.rev[page];
   }
   if (videoMap.fwd[page]) {
     return videoMap.fwd[page];
   }
-  return null; 
+  return null;
 };
 
 function App() {
@@ -112,17 +128,107 @@ function App() {
 
   const totalPages = 10;
   const scrollTimeout = useRef(null);
-  const scrollSensitivityThreshold = 5; 
+  const scrollSensitivityThreshold = 5;
 
-  const handleLoadingComplete = () => {
+  const handleLoadingComplete = useCallback(() => {
     setIsLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
+    let touchStartY = 0;
+
+    const handleTouchStart = (e) => {
+      if (isSidebarOpen) {
+        const sidebarScrollContainer = document.querySelector(
+          ".sidebar-scroll-container"
+        );
+        if (
+          sidebarScrollContainer &&
+          sidebarScrollContainer.contains(e.target)
+        ) {
+          return;
+        }
+      }
+      touchStartY = e.changedTouches[0].screenY;
+    };
+
+    const handleTouchMove = (e) => {
+      if (isSidebarOpen) {
+        const sidebarScrollContainer = document.querySelector(
+          ".sidebar-scroll-container"
+        );
+        if (
+          sidebarScrollContainer &&
+          sidebarScrollContainer.contains(e.target)
+        ) {
+          return;
+        } else {
+          e.preventDefault();
+        }
+      } else {
+        if (pageNumber === 10) {
+        } else {
+          e.preventDefault();
+        }
+      }
+    };
+
+    const handleTouchEnd = (e) => {
+      const touchEndYLocal = e.changedTouches[0].screenY;
+      if (isSidebarOpen) {
+        return;
+      }
+
+      if (isTransitioning || scrollTimeout.current) {
+        return;
+      }
+
+      const swipeThreshold = 50;
+      let swipeDirection = "";
+
+      if (touchStartY - touchEndYLocal > swipeThreshold) {
+        swipeDirection = "down";
+      } else if (touchEndYLocal - touchStartY > swipeThreshold) {
+        swipeDirection = "up";
+      }
+
+      if (!swipeDirection) {
+        return;
+      }
+
+      if (pageNumber === 10) {
+        const isNearTop =
+          (window.scrollY ||
+            document.documentElement.scrollTop ||
+            document.body.scrollTop) < scrollSensitivityThreshold;
+        if (swipeDirection !== "up" && !isNearTop) {
+          return;
+        }
+      }
+
+      scrollTimeout.current = setTimeout(() => {
+        scrollTimeout.current = null;
+        if (swipeDirection === "down" && pageNumber < totalPages) {
+          setIsTransitioning(true);
+          setScrollDirection("down");
+          setPageNumber((prev) => prev + 1);
+        } else if (swipeDirection === "up" && pageNumber > 1) {
+          setIsTransitioning(true);
+          setScrollDirection("up");
+          setPageNumber((prev) => prev - 1);
+        }
+      }, 250); 
+    };
+
     const handleScroll = (e) => {
       if (isSidebarOpen) {
-        const sidebarScrollContainer = document.querySelector('.sidebar-scroll-container');
-        if (sidebarScrollContainer && sidebarScrollContainer.contains(e.target)) {
+        const sidebarScrollContainer = document.querySelector(
+          ".sidebar-scroll-container"
+        );
+        if (
+          sidebarScrollContainer &&
+          sidebarScrollContainer.contains(e.target)
+        ) {
           return;
         } else {
           e.preventDefault();
@@ -140,7 +246,10 @@ function App() {
       let shouldPreventDefault = false;
 
       if (pageNumber === 10) {
-        const isNearTop = (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop) < scrollSensitivityThreshold;
+        const isNearTop =
+          (window.scrollY ||
+            document.documentElement.scrollTop ||
+            document.body.scrollTop) < scrollSensitivityThreshold;
 
         if (isScrollingUp && isNearTop) {
           shouldPreventDefault = true;
@@ -173,9 +282,15 @@ function App() {
     };
 
     window.addEventListener("wheel", handleScroll, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: false });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     return () => {
       window.removeEventListener("wheel", handleScroll);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
         scrollTimeout.current = null;
@@ -225,7 +340,7 @@ function App() {
     if (isTransitioning && pageNumber !== 10) {
       const newSrc = getVideoSource(scrollDirection, pageNumber);
       setVideoSrc(newSrc);
-    } else if (pageNumber === 10 && scrollDirection === 'down') {
+    } else if (pageNumber === 10 && scrollDirection === "down") {
     }
   }, [isTransitioning, pageNumber, scrollDirection]);
 
@@ -251,12 +366,10 @@ function App() {
     }
 
     return () => {
-        htmlEl.classList.remove("scrollbar-hide");
-        bodyEl.classList.remove("scrollbar-hide");
-    }
-
+      htmlEl.classList.remove("scrollbar-hide");
+      bodyEl.classList.remove("scrollbar-hide");
+    };
   }, [pageNumber]);
-
 
   const handlePageChange = (newPage, direction) => {
     if (isTransitioning || isSidebarOpen) return;
@@ -264,7 +377,6 @@ function App() {
     setScrollDirection(direction);
     setPageNumber(newPage);
   };
-
 
   if (isLoading) {
     return <Loader onLoadingComplete={handleLoadingComplete} />;
@@ -274,13 +386,11 @@ function App() {
     <>
       <div
         className={`app-container relative w-full text-white opacity-100 ${
-          pageNumber === 10
-            ? "h-auto"
-            : "h-screen overflow-hidden"
+          pageNumber === 10 ? "h-auto" : "h-screen overflow-hidden"
         }`}
       >
         <VideoBackground
-          videoSrc={videoSrc} 
+          videoSrc={videoSrc}
           isSidebarOpen={isSidebarOpen}
           pageNumber={pageNumber}
         />

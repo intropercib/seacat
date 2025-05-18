@@ -12,6 +12,7 @@ const LoadingScreen = ({ onLoadingComplete }) => {
 
   const handleStartClick = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!loadingScreenRef.current) return;
 
     gsap.set(logoContent2Ref.current, { pointerEvents: "none" });
@@ -42,11 +43,12 @@ const LoadingScreen = ({ onLoadingComplete }) => {
             logoContent2Ref.current.style.display = "block";
             loadingLineRef.current.style.display = "block";
 
+            gsap.set(logoContent2Ref.current, { pointerEvents: "auto" });
+
             tl1.to(logoContent2Ref.current, {
               y: -12,
-              delay: 0.7,
+              delay: 0.7, 
               opacity: 0.5,
-              pointerEvents: "auto",
             });
 
             gsap.to(loadingLineRef.current, {
@@ -89,6 +91,9 @@ const LoadingScreen = ({ onLoadingComplete }) => {
       logoContent2El.addEventListener("mouseover", () => handleHover(true));
       logoContent2El.addEventListener("mouseout", () => handleHover(false));
       logoContent2El.addEventListener("click", handleStartClick);
+      logoContent2El.addEventListener("touchstart", handleStartClick, {
+        passive: false,
+      });
     }
 
     return () => {
@@ -105,6 +110,7 @@ const LoadingScreen = ({ onLoadingComplete }) => {
           handleHover(false)
         );
         logoContent2El.removeEventListener("click", handleStartClick);
+        logoContent2El.removeEventListener("touchstart", handleStartClick);
       }
       tl1.kill();
       gsap.killTweensOf([
