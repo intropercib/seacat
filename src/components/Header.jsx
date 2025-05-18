@@ -57,7 +57,6 @@ const Header = ({ pageNumber }) => {
     }
 
     if (isInitialLoad && pageNumber === 1) {
-      console.log("Initial Load: Animating Header 1 In");
       gsap.set(header2Elements, targetHeader2State); 
       gsap.fromTo(header1Element,
         { opacity: 0, y: Y_OFFSET }, 
@@ -148,7 +147,7 @@ const Header = ({ pageNumber }) => {
         <div ref={centerRef}>
           <img src={logo} alt="logo" className="h-[50px] mix-blend-overlay -translate-x-[30%]" />
         </div>
-        <div className="relative h-[50px] w-[50px] cursor-pointer mb-[5px]" ref={rightRef}> 
+        <div className="relative h-[50px] w-[50px] cursor-pointer pb-[10px]" ref={rightRef}> 
           <img
             ref={iconMenuRef}
             src={iconMenu}
